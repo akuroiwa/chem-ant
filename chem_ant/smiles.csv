@@ -1,0 +1,101 @@
+3CLpro-1,inhibitor of 3C-like protease,C1CNC(=O)C1CC(C=O)NC(=O)C(CC2=CC=CC=C2)NC(=O)C=CC3=C(C=C(C=C3)Cl)F
+GC376,inhibitor of 3C-like protease,CC(C)CC(C(=O)NC(CC1CCNC1=O)C(O)S(=O)(=O)[O-])NC(=O)OCC2=CC=CC=C2.[Na+]
+Rupintrivir,inhibitor of 3C-like protease,CCOC(=O)C=CC(CC1CCNC1=O)NC(=O)C(CC2=CC=C(C=C2)F)CC(=O)C(C(C)C)NC(=O)C3=NOC(=C3)C
+PF-07304814 Lufotrelvir,inhibitor of 3C-like protease,CC(C)CC(C(=O)NC(CC1CCNC1=O)C(=O)COP(=O)(O)O)NC(=O)C2=CC3=C(N2)C=CC=C3OC
+PF-00835231,inhibitor of 3C-like protease,CC(C)CC(C(=O)NC(CC1CCNC1=O)C(=O)CO)NC(=O)C2=CC3=C(N2)C=CC=C3OC
+PF-07321332 Nirmatrelvir,inhibitor of 3C-like protease,CC1(C2C1C(N(C2)C(=O)C(C(C)(C)C)NC(=O)C(F)(F)F)C(=O)NC(CC3CCNC3=O)C#N)C
+YH-53,inhibitor of 3C-like protease,CC(C)CC(C(=O)NC(CC1CCNC1=O)C(=O)C2=NC3=CC=CC=C3S2)NC(=O)C4=CC5=C(N4)C=CC=C5OC
+
+Remdesivir,Antiviral drug,CCC(CC)COC(=O)C(C)NP(=O)(OCC1C(C(C(O1)(C#N)C2=CC=C3N2N=CN=C3N)O)O)OC4=CC=CC=C4
+Molnupiravir,Antiviral drug,CC(C)C(=O)OCC1C(C(C(O1)N2C=CC(=NC2=O)NO)O)O
+
+Benazepril,ACE inhibitor,CCOC(=O)C(CCC1=CC=CC=C1)NC2CCC3=CC=CC=C3N(C2=O)CC(=O)O
+Captopril,ACE inhibitor,CC(CS)C(=O)N1CCCC1C(=O)O
+Enalapril,ACE inhibitor,CCOC(=O)C(CCC1=CC=CC=C1)NC(C)C(=O)N2CCCC2C(=O)O
+Fosinopril,ACE inhibitor,CCC(=O)OC(C(C)C)OP(=O)(CCCCC1=CC=CC=C1)CC(=O)N2CC(CC2C(=O)O)C3CCCCC3
+Lisinopril,ACE inhibitor,C1CC(N(C1)C(=O)C(CCCCN)NC(CCC2=CC=CC=C2)C(=O)O)C(=O)O
+Moexipril,ACE inhibitor,CCOC(=O)C(CCC1=CC=CC=C1)NC(C)C(=O)N2CC3=CC(=C(C=C3CC2C(=O)O)OC)OC
+Perindopril,ACE inhibitor,CCCC(C(=O)OCC)NC(C)C(=O)N1C2CCCCC2CC1C(=O)O
+Quinapril,ACE inhibitor,CCOC(=O)C(CCC1=CC=CC=C1)NC(C)C(=O)N2CC3=CC=CC=C3CC2C(=O)O
+Ramipril,ACE inhibitor,CCOC(=O)C(CCC1=CC=CC=C1)NC(C)C(=O)N2C3CCCC3CC2C(=O)O
+Trandolapril,ACE inhibitor,CCOC(=O)C(CCC1=CC=CC=C1)NC(C)C(=O)N2C3CCCCC3CC2C(=O)O
+
+Azilsartan,ARB,CCOC1=NC2=CC=CC(=C2N1CC3=CC=C(C=C3)C4=CC=CC=C4C5=NOC(=O)N5)C(=O)O
+Candesartan,ARB,CCOC1=NC2=CC=CC(=C2N1CC3=CC=C(C=C3)C4=CC=CC=C4C5=NNN=N5)C(=O)O
+Eprosartan,ARB,CCCCC1=NC=C(N1CC2=CC=C(C=C2)C(=O)O)C=C(CC3=CC=CS3)C(=O)O
+Irbesartan,ARB,CCCCC1=NC2(CCCC2)C(=O)N1CC3=CC=C(C=C3)C4=CC=CC=C4C5=NNN=N5
+Losartan,ARB,CCCCC1=NC(=C(N1CC2=CC=C(C=C2)C3=CC=CC=C3C4=NNN=N4)CO)Cl
+Olmesartan,ARB,CCCC1=NC(=C(N1CC2=CC=C(C=C2)C3=CC=CC=C3C4=NNN=N4)C(=O)O)C(C)(C)O
+Telmisartan,ARB,CCCC1=NC2=C(N1CC3=CC=C(C=C3)C4=CC=CC=C4C(=O)O)C=C(C=C2C)C5=NC6=CC=CC=C6N5C
+Valsartan,ARB,CCCCC(=O)N(CC1=CC=C(C=C1)C2=CC=CC=C2C3=NNN=N3)C(C(C)C)C(=O)O
+
+Citronellol,Essential oils,CC(CCC=C(C)C)CCO
+Eucalyptol,Essential oils,CC1(C2CCC(O1)(CC2)C)C
+Alpha-terpineol,Essential oils,CC1=CCC(CC1)C(C)(C)O
+d-Limonene,Essential oils,CC1=CCC(CC1)C(=C)C
+o-Cymene,Essential oils,CC1=CC=CC=C1C(C)C
+Alpha-pinene,Essential oils,CC1=CCC2CC1C2(C)C
+3-Carene,Essential oils,CC1=CCC2C(C1)C2(C)C
+
+SJ-733,Anti-malarial drug,C1=CC=C2C(=C1)C(C(N(C2=O)CC(F)(F)F)C3=CN=CC=C3)C(=O)NC4=CC(=C(C=C4)F)C#N
+Tafenoquine,Anti-malarial drug,CC1=CC(=NC2=C1C(=C(C=C2NC(C)CCCN)OC)OC3=CC=CC(=C3)C(F)(F)F)OC
+Cipargamin,Anti-malarial drug,CC1CC2=C(C3(N1)C4=C(C=CC(=C4)Cl)NC3=O)NC5=CC(=C(C=C25)F)Cl
+Mefloquine,Anti-malarial drug,C1CCNC(C1)C(C2=CC(=NC3=C2C=CC=C3C(F)(F)F)C(F)(F)F)O
+Artesunate,Anti-malarial drug,CC1CCC2C(C(OC3C24C1CCC(O3)(OO4)C)OC(=O)CCC(=O)O)C
+Artemether,Anti-malarial drug,CC1CCC2C(C(OC3C24C1CCC(O3)(OO4)C)OC)C
+JPC-3210,Anti-malarial drug,CC(C)(C)C1=CC(=C(C(=C1)C2=CC(=C(N=C2)C(F)(F)F)F)O)CNC(C)(C)C
+Artenimol,Anti-malarial drug,CC1CCC2C(C(OC3C24C1CCC(O3)(OO4)C)O)C
+Artemisinin,Anti-malarial drug,CC1CCC2C(C(=O)OC3C24C1CCC(O3)(OO4)C)C
+Quinine,Anti-malarial drug,COC1=CC2=C(C=CN=C2C=C1)C(C3CC4CCN3CC4C=C)O
+
+Clotrimazole,Antifungal drug,C1=CC=C(C=C1)C(C2=CC=CC=C2)(C3=CC=CC=C3Cl)N4C=CN=C4
+
+Quercetin,Flavonoid,C1=CC(=C(C=C1C2=C(C(=O)C3=C(C=C(C=C3O2)O)O)O)O)O
+Flavan-3-ol,Flavonoid,C1C(C(OC2=CC=CC=C21)C3=CC=CC=C3)O
+Catechin,Flavonoid,C1C(C(OC2=CC(=CC(=C21)O)O)C3=CC(=C(C=C3)O)O)O
+Proanthocyanidin,Flavonoid,COC1=C(C=C(C=C1O)C2C(CC3=C(O2)C(=C(C=C3O)O)C4C(C(OC5=CC(=CC(=C45)O)O)C6=CC=C(C=C6)O)O)O)O
+Anthocyanin,Flavonoid,C1=CC=C(C=C1)C2=[O+]C3=CC=CC=C3C=C2
+Chlorogenic acid,Flavonoid,C1C(C(C(CC1(C(=O)O)O)OC(=O)C=CC2=CC(=C(C=C2)O)O)O)O
+
+Ciprofloxacin,Antibiotic,C1CC1N2C=C(C(=O)C3=CC(=C(C=C32)N4CCNCC4)F)C(=O)O
+Clindamycin,Antibiotic,CCCC1CC(N(C1)C)C(=O)NC(C2C(C(C(C(O2)SC)O)O)O)C(C)Cl
+
+Nelfinavir,Antiretroviral protease inhibitor,CC1=C(C=CC=C1O)C(=O)NC(CSC2=CC=CC=C2)C(CN3CC4CCCCC4CC3C(=O)NC(C)(C)C)O
+
+Ginkgolide M,Terpenoid,CC1C2C(C(C34C25C(=O)OC3C(C(C46C(C(=O)OC6O5)O)C(C)(C)C)O)O)OC1=O
+Mezerein,Ester,CC1C(C2(C3C4C1(C5C=C(C(=O)C5(C(C6(C4O6)CO)O)O)C)OC(O3)(O2)C7=CC=CC=C7)C(=C)C)OC(=O)C=CC=CC8=CC=CC=C8
+Tubocurarine,Alkaloid,CN1CCC2=CC(=C3C=C2C1CC4=CC=C(C=C4)OC5=C6C(CC7=CC(=C(C=C7)O)O3)[N+](CCC6=CC(=C5O)OC)(C)C)OC
+Glycobismine A,Neoflavonoid,CC(=CCC1=C2C(=C(C(=C1O)C3CC(OC4=C3C5=C(C(=C4)O)C(=O)C6=CC=CC=C6N5)(C)C)O)C(=O)C7=CC=CC=C7N2C)C
+Gnidicin,Diterpenoid,CC1C(C2(C3C4C1(C5C=C(C(=O)C5(C(C6(C4O6)CO)O)O)C)OC(O3)(O2)C7=CC=CC=C7)C(=C)C)OC(=O)C=CC8=CC=CC=C8
+Sciadopitysin,Biflavonoid,COC1=CC=C(C=C1)C2=CC(=O)C3=C(O2)C(=C(C=C3O)O)C4=C(C=CC(=C4)C5=CC(=O)C6=C(C=C(C=C6O5)OC)O)OC
+Gnididin,,CCCCCC=CC=CC(=O)OC1C(C23C4C=C(C(=O)C4(C(C5(C(C2C6C1(OC(O6)(O3)C7=CC=CC=C7)C(=C)C)O5)CO)O)O)C)C
+Emetine,Alkaloid,CCC1CN2CCC3=CC(=C(C=C3C2CC1CC4C5=CC(=C(C=C5CCN4)OC)OC)OC)OC
+Vitexin,Apigenin flavone glycoside,C1=CC(=CC=C1C2=CC(=O)C3=C(O2)C(=C(C=C3O)O)C4C(C(C(C(O4)CO)O)O)O)O
+Calophyllolide,Neoflavonoid,CC=C(C)C(=O)C1=C(C2=C(C3=C1OC(=O)C=C3C4=CC=CC=C4)OC(C=C2)(C)C)OC
+
+Asparagine,Amino acid,C(C(C(=O)O)N)C(=O)N
+Cysteine,Amino acid,C(C(C(=O)O)N)S
+Glutamic acid,Amino acid,C(CC(=O)O)C(C(=O)O)N
+Glycine,Amino acid,C(C(=O)O)N
+Histidine,Amino acid,C1=C(NC=N1)CC(C(=O)O)N
+Phenylalanine,Amino acid,C1=CC=C(C=C1)CC(C(=O)O)N
+
+Leucine,Amino acid,CC(C)CC(C(=O)O)N
+Serine,Amino acid,C(C(C(=O)O)N)O
+Tryptophan,Amino acid,C1=CC=C2C(=C1)C(=CN2)CC(C(=O)O)N
+Proline,Amino acid,C1CC(NC1)C(=O)O
+Glutamine,Amino acid,C(CC(=O)N)C(C(=O)O)N
+Arginine,Amino acid,C(CC(C(=O)O)N)CN=C(N)N
+Isoleucine,Amino acid,CCC(C)C(C(=O)O)N
+Methionine,Amino acid,CSCCC(C(=O)O)N
+Threonine,Amino acid,CC(C(C(=O)O)N)O
+Lysine,Amino acid,C(CCN)CC(C(=O)O)N
+Valine,Amino acid,CC(C)C(C(=O)O)N
+Alanine,Amino acid,CC(C(=O)O)N
+Aspartic Acid,Amino acid,C(C(C(=O)O)N)C(=O)O
+
+Adenine,Nucleotide,C1=NC2=NC=NC(=C2N1)N
+Cytosine,Nucleotide,C1=C(NC(=O)N=C1)N
+Guanine,Nucleotide,C1=NC2=C(N1)C(=O)NC(=N2)N
+Thymine,Nucleotide,CC1=CNC(=O)NC1=O
+Uracil,Nucleotide,C1=CNC(=O)NC1=O

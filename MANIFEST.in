@@ -1,0 +1,5 @@
+include *.txt
+include *.md
+recursive-include chem_ant *.csv
+
+global-exclude *.pyc __pycache__
