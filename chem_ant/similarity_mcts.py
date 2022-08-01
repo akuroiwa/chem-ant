@@ -12,7 +12,8 @@ from global_chem_extensions.cheminformatics.cheminformatics import ChemInformati
 
 class SimilarityState():
 
-    def __init__(self, jewel, vera):
+    def __init__(self, jewel, vera,
+                 loop=1, experiment=3, file_name="generated_smiles.csv", dataset=False, verbose=False):
         self.jewel = jewel
         self.vera = vera
         self.hercule = []
@@ -23,20 +24,20 @@ class SimilarityState():
         # self.little_gray_cells = None
         # self.lipinski = None
         self.currentPlayer = 1
-
-    def setLoop(self, loop=1, experiment=3, file_name="generated_smiles.csv", dataset=False):
         self.loop = loop
         self.experiment = experiment
         self.file_name = file_name
         self.dataset = dataset
+        self.verbose = verbose
 
     def getCurrentPlayer(self):
         # return 1 if len(self.hercule) % 2 == 0 else -1
         return self.currentPlayer
 
     def getPossibleActions(self):
-        print("getPossibleActions")
-        print("Vera: {}".format(self.vera))
+        if self.verbose:
+            print("getPossibleActions")
+            print("Vera: {}".format(self.vera))
 
         try:
             set1 = set(self.vera)
@@ -48,7 +49,8 @@ class SimilarityState():
 
     # @property
     def setPrevious(self, previous):
-        print("setPrevious")
+        if self.verbose:
+            print("setPrevious")
 
         try:
             set1 = set(self.vera)
@@ -61,19 +63,21 @@ class SimilarityState():
         newState = deepcopy(self)
         newState.hercule.append(action)
         newState.currentPlayer = self.currentPlayer * -1
-        print("takeAction")
+        if self.verbose:
+            print("takeAction")
         return newState
 
     def isTerminal(self):
-        print("isTerminal")
-        print("Length of hercule: {}".format(len(self.hercule)))
-        print("Hercule: {}".format(self.hercule))
-        print("Smiles: {}".format(self.smiles))
-        print("Vera: {}".format(self.vera))
+        if self.verbose:
+            print("isTerminal")
+            print("Length of hercule: {}".format(len(self.hercule)))
+            print("Hercule: {}".format(self.hercule))
+            print("Smiles: {}".format(self.smiles))
+            print("Vera: {}".format(self.vera))
         return True if (len(self.hercule) >= self.loop) or (not self.vera) or (self.hercule and not self.smiles) else False
 
     @classmethod
-    def genMols(cls, jewel, hercule, loop=3, file_name="generated_smiles.csv", dataset=False):
+    def genMols(cls, jewel, hercule, loop=3, file_name="generated_smiles.csv", dataset=False, verbose=False):
     # @staticmethod
     # def genMols(jewel, hercule, loop=3, file_name="generated_smiles.csv"):
         jewel_mol = Chem.MolFromSmiles(jewel)
@@ -88,17 +92,20 @@ class SimilarityState():
         for smiles in hercule:
             try:
                 allfrags.update(BRICS.BRICSDecompose(Chem.MolFromSmiles(smiles), returnMols=True))
-                print("allfrags update")
+                if verbose:
+                    print("allfrags update")
             except TypeError:
-                print("TypeError")
-                print(allfrags)
+                if verbose:
+                    print("TypeError")
+                    print(allfrags)
                 continue
 
         if not allfrags:
             raise ValueError("Any fragments is not generated.")
 
         builder = BRICS.BRICSBuild(allfrags)
-        print("builder")
+        if verbose:
+            print("builder")
 
         generated_mols = []
         smiles = []
@@ -109,16 +116,19 @@ class SimilarityState():
         for i in range(loop):
             try:
                 mol = next(builder)
-                print("Mol generated.")
+                if verbose:
+                    print("Mol generated.")
                 mol.UpdatePropertyCache(strict=True)
-                print("SanitizeMol")
+                if verbose:
+                    print("SanitizeMol")
             except StopIteration:
                 break
 
             if Chem.SanitizeMol(mol, catchErrors=True) == 0:
                 generated_mols.append(mol)
                 smiles.append(Chem.MolToSmiles(mol))
-                print("generated_mols append")
+                if verbose:
+                    print("generated_mols append")
                 morgan_fp = AllChem.GetMorganFingerprintAsBitVect(mol, 2, 2048)
                 # morgan_fp = Pairs.GetAtomPairFingerprint(mol)
                 # morgan_fp = FingerprintMols.FingerprintMol(mol)
@@ -159,34 +169,41 @@ class SimilarityState():
 
     def getReward(self):
         try:
-            (generated_mols, self.smiles, morgan_fps, little_gray_cells, lipinski) = self.genMols(self.jewel, self.hercule, self.experiment, self.file_name, self.dataset)
-            print("getReward genMols")
+            (generated_mols, self.smiles, morgan_fps, little_gray_cells, lipinski) = self.genMols(self.jewel, self.hercule, self.experiment, self.file_name, self.dataset, self.verbose)
+            if self.verbose:
+                print("getReward genMols")
         except:
-            print("getReward genMols except")
+            if self.verbose:
+                print("getReward genMols except")
             return -1
 
         if not self.smiles:
-            print(self.smiles is None)
+            if self.verbose:
+                print(self.smiles is None)
             return -1
         # elif (not self.generated_mols) or (not self.smiles) or (not self.morgan_fps) or (not self.little_gray_cells):
         #     return -1
 
         if not filter_smiles(self.smiles):
-            print("getReward filter smiles is None.")
+            if self.verbose:
+                print("getReward filter smiles is None.")
             return -1
 
 
         try:
             max_suspect = max(little_gray_cells)
             max_suspect_index = little_gray_cells.index(max_suspect)
-            print(smiles[max_suspect_index], little_gray_cells[max_suspect_index])
+            if self.verbose:
+                print(smiles[max_suspect_index], little_gray_cells[max_suspect_index])
 
         # except ValueError:
         except:
-            print("return -1")
+            if self.verbose:
+                print("return -1")
             return -1
 
-        print("getReward")
+        if self.verbose:
+            print("getReward")
         if max_suspect <= 0.5:
             return 0
         elif max_suspect > 0.5:
@@ -203,6 +220,7 @@ def console_script2():
     parser.add_argument("-p", "--path", dest="path", default="gen_smiles", type=str, help="Directory where you want to save.  Default is gen_smiles.")
     parser.add_argument("-f", "--file", dest="file_name", default="generated_smiles.csv", type=str, help="File name.  Default is generated_smiles.csv.")
     parser.add_argument("-d", "--dataset", dest="dataset", action="store_true", help="Output json file for similarity_classification.py instead of csv file.")
+    parser.add_argument("-v", "--verbose", dest="verbose", action="store_true", help="Verbose mode.")
     args = parser.parse_args()
 
     os.makedirs(args.path, exist_ok=True)
@@ -210,8 +228,9 @@ def console_script2():
     jewel = args.target
     double_clue = args.molecule
     dataset = args.dataset
-    (generated_mols, smiles, morgan_fps, little_gray_cells, lipinski) = SimilarityState.genMols(jewel, double_clue, args.generate, file_name, dataset)
-    print("Generated smiles: {}".format(smiles))
+    (generated_mols, smiles, morgan_fps, little_gray_cells, lipinski) = SimilarityState.genMols(jewel, double_clue, args.generate, file_name, dataset, args.verbose)
+    if args.verbose:
+        print("Generated smiles: {}".format(smiles))
 
 def filter_smiles(smiles_list):
     filtered_smiles = ChemInformatics.filter_smiles_by_criteria(
@@ -259,6 +278,7 @@ def console_script():
     parser.add_argument("-p", "--path", dest="path", default="gen_smiles", type=str, help="Directory where you want to save.  Default is gen_smiles.")
     parser.add_argument("-f", "--file", dest="file_name", default="generated_smiles.csv", type=str, help="File name.  Default is generated_smiles.csv.")
     parser.add_argument("-d", "--dataset", dest="dataset", action="store_true", help="Output json file for similarity_classification.py instead of csv file.")
+    parser.add_argument("-v", "--verbose", dest="verbose", action="store_true", help="Verbose mode.")
     args = parser.parse_args()
 
     if args.target == None:
@@ -282,14 +302,16 @@ def console_script():
         vera = pd.read_csv(os.path.join(os.getcwd(), 'smiles.csv'), header=None, usecols=[2]).squeeze().values.tolist()
         # vera = pd.read_csv(os.path.join(os.getcwd(), 'smiles.csv'), header=0, usecols=[2]).squeeze().values.tolist()
 
-    initialState = SimilarityState(jewel, vera)
-    mymcts = mcts(iterationLimit=args.iterationLimit)
-
-    double_clue = set()
     os.makedirs(args.path, exist_ok=True)
     file_name = os.path.join(args.path, args.file_name)
     dataset = args.dataset
-    initialState.setLoop(args.loop, args.experiment, file_name, dataset)
+    verbose = args.verbose
+
+    initialState = SimilarityState(jewel, vera,
+                                   args.loop, args.experiment, file_name, dataset, verbose)
+    mymcts = mcts(iterationLimit=args.iterationLimit)
+
+    double_clue = set()
     for i in range(args.loop):
         newState = deepcopy(initialState)
         newState.setPrevious(double_clue)
@@ -298,8 +320,9 @@ def console_script():
     if args.include:
         double_clue.add(jewel)
     print("Material candidates: {}".format(double_clue))
-    (generated_mols, smiles, morgan_fps, little_gray_cells, lipinski) = initialState.genMols(jewel, double_clue, args.generate, file_name, dataset)
-    print("Generated smiles: {}".format(smiles))
+    (generated_mols, smiles, morgan_fps, little_gray_cells, lipinski) = initialState.genMols(jewel, double_clue, args.generate, file_name, dataset, verbose)
+    if args.verbose:
+        print("Generated smiles: {}".format(smiles))
 
 if __name__ == "__main__":
     console_script()
