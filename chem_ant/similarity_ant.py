@@ -87,12 +87,11 @@ class SimilarityAntSimulator(object):
         action=(action for action, node in self.root.children.items() if node is bestChild).__next__()
         return action
 
-    def set_loop(self, jewel, vera, double_clue, loop, experiment, file_name):
-        self.initialState = SimilarityState(jewel, vera)
+    def set_loop(self, jewel, vera, double_clue, loop, experiment, file_name, json, verbose):
+        self.initialState = SimilarityState(jewel, vera,
+                                   loop, experiment, file_name, json, verbose)
         self.mcts_instance = AntMcts(iterationLimit=5)
-        # self.initialState = SimilarityState(jewel, vera, loop)
         self.initialState.setPrevious(double_clue)
-        self.initialState.setLoop(loop, experiment, file_name)
         # self.mcts_instance = AntMcts(iterationLimit=5)
         self.root = AntTreeNode(self.initialState, None)
 
@@ -102,11 +101,6 @@ class SimilarityAntSimulator(object):
         self.dl = True
         # self.regression = True
         self.regression = regression
-        # try:
-        #     from similarity_classification.similarity_classification import SimilarityClassification
-        # except ImportError:
-        #     from similarity_classification import SimilarityClassification
-        # self.mcts_instance.classification = SimilarityClassification()
         if self.regression:
             try:
                 from chem_classification.similarity_classification import SimilarityRegression
@@ -215,6 +209,10 @@ class AntMcts(mcts):
         self.regression = False
 
     def mctsSolver(self, node):
+        '''This is based on pseudocode from the following paper:
+        `Winands, Mark & Björnsson, Yngvi & Saito, Jahn-Takeshi. (2008). Monte-Carlo Tree Search Solver. 25-36. 10.1007/978-3-540-87608-3_3.
+        <https://www.researchgate.net/publication/220962507_Monte-Carlo_Tree_Search_Solver>`__
+        '''
         if node.isTerminal:
             if  node.state.getReward() == 1:
                 node.value = float("inf")
@@ -332,9 +330,9 @@ toolbox.register("mate", gp.cxOnePoint)
 toolbox.register("expr_mut", gp.genFull, min_=0, max_=2)
 toolbox.register("mutate", gp.mutUniform, expr=toolbox.expr_mut, pset=pset)
 
-def main(jewel, vera, double_clue, loop=1, experiment=3, file_name="generated_smiles.csv", population=500, generation=15, dl=False, regression=False):
+def main(jewel, vera, double_clue, loop=1, experiment=3, file_name="generated_smiles.csv", population=500, generation=15, dl=False, regression=False, json=False, verbose=False):
     random.seed(69)
-    ant.set_loop(jewel, vera, double_clue, loop, experiment, file_name)
+    ant.set_loop(jewel, vera, double_clue, loop, experiment, file_name, json, verbose)
     if dl:
     # if dl or regression:
         ant.set_dl()
@@ -376,6 +374,8 @@ def console_script():
     parser.add_argument("-f", "--file", dest="file_name", default="generated_smiles.csv", type=str, help="File name.  Default is generated_smiles.csv.")
     parser.add_argument("-d", "--deep-learning", dest='dl', action='store_true', help="With deep learning.")
     parser.add_argument("-r", "--rgression", dest="regression", action="store_true", help="Use regression model.")
+    parser.add_argument("-j", "--json", dest="json", action="store_true", help="Output json file for similarity_classification.py.")
+    parser.add_argument("-v", "--verbose", dest="verbose", action="store_true", help="Verbose mode.")
     args = parser.parse_args()
 
     if args.target == None:
@@ -400,8 +400,7 @@ def console_script():
     # initialState = SimilarityState(jewel, vera, loop=args.loop)
     # mcts = mcts(iterationLimit=5)
 
-    # double_clue = set()
-    double_clue = []
+    double_clue = set()
     loop = args.loop
     experiment = args.experiment
     population = args.population
@@ -410,19 +409,23 @@ def console_script():
     file_name = os.path.join(args.path, args.file_name)
     dl = args.dl
     regression = args.regression
+    json = args.json
+    verbose = args.verbose
     for i in range(args.loop):
         # initialState.setPrevious(double_clue)
-        # initialState.setLoop(loop)
         # action = mcts.search(initialState=initialState)
-        pop, hof, stats, action = main(jewel, vera, double_clue, loop, experiment, file_name, population, generation, dl, regression)
-        double_clue.append(action)
+        pop, hof, stats, action = main(jewel, vera,
+                                       double_clue, loop, experiment, file_name, population, generation, dl, regression, json, verbose)
+        double_clue.add(action)
         # loop -= 1
-    print(double_clue)
 
     if args.include:
-        double_clue.append(args.target)
+        double_clue.add(args.target)
+    print("Material candidates: {}".format(double_clue))
     generated_mols, smiles, morgan_fps, little_gray_cells, lipinski = ant.initialState.genMols(jewel, double_clue, args.generate, file_name)
-    print(smiles)
+    if verbose:
+        print("Generated smiles: {}".format(smiles))
+
     # gen_df = pd.DataFrame({"smiles": smiles, "dice_similarity": little_gray_cells})
     # gen_df.sort_values("dice_similarity", inplace=True, ascending=False)
     # gen_df.reset_index(drop=True).to_csv("generated_smiles.csv")

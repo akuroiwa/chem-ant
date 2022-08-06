@@ -13,7 +13,7 @@ from global_chem_extensions.cheminformatics.cheminformatics import ChemInformati
 class SimilarityState():
 
     def __init__(self, jewel, vera,
-                 loop=1, experiment=3, file_name="generated_smiles.csv", dataset=False, verbose=False):
+                 loop=1, experiment=3, file_name="generated_smiles.csv", json=False, verbose=False):
         self.jewel = jewel
         self.vera = vera
         self.hercule = []
@@ -27,7 +27,7 @@ class SimilarityState():
         self.loop = loop
         self.experiment = experiment
         self.file_name = file_name
-        self.dataset = dataset
+        self.json = json
         self.verbose = verbose
 
     def getCurrentPlayer(self):
@@ -77,7 +77,7 @@ class SimilarityState():
         return True if (len(self.hercule) >= self.loop) or (not self.vera) or (self.hercule and not self.smiles) else False
 
     @classmethod
-    def genMols(cls, jewel, hercule, loop=3, file_name="generated_smiles.csv", dataset=False, verbose=False):
+    def genMols(cls, jewel, hercule, loop=3, file_name="generated_smiles.csv", json=False, verbose=False):
     # @staticmethod
     # def genMols(jewel, hercule, loop=3, file_name="generated_smiles.csv"):
         jewel_mol = Chem.MolFromSmiles(jewel)
@@ -143,33 +143,35 @@ class SimilarityState():
                 # break
                 raise ValueError("SanitizeMol error")
 
-        if dataset:
-            join_hercule = " ".join(hercule)
-            if os.path.exists(file_name):
-                gen_df_old = pd.read_json(file_name)
-                gen_df_new = pd.DataFrame({"text_a": jewel, "text_b": join_hercule, "labels": little_gray_cells})
+        if json:
+            json_file_name = os.path.splitext(file_name)[0] + '.json'
+            poirot = " ".join(hercule)
+            max_suspect = max(little_gray_cells)
+            if os.path.exists(json_file_name):
+                gen_df_old = pd.read_json(json_file_name)
+                gen_df_new = pd.DataFrame([{"text_a": jewel, "text_b": poirot, "labels": max_suspect}])
                 gen_df = pd.concat([gen_df_old, gen_df_new], axis=0)
             else:
-                gen_df = pd.DataFrame({"text_a": jewel, "text_b": join_hercule, "labels": little_gray_cells})
+                gen_df = pd.DataFrame([{"text_a": jewel, "text_b": poirot, "labels": max_suspect}])
             gen_df.sort_values("labels", inplace=True, ascending=False)
             gen_df.drop_duplicates(inplace=True)
-            gen_df.reset_index(drop=True).to_json(file_name)
+            gen_df.reset_index(drop=True).to_json(json_file_name)
+
+        if os.path.exists(file_name):
+            gen_df_old = pd.read_csv(file_name, index_col=0)
+            gen_df_new = pd.DataFrame({"smiles": smiles, "dice_similarity": little_gray_cells, "lipinski": lipinski})
+            gen_df = pd.concat([gen_df_old, gen_df_new], axis=0)
         else:
-            if os.path.exists(file_name):
-                gen_df_old = pd.read_csv(file_name, index_col=0)
-                gen_df_new = pd.DataFrame({"smiles": smiles, "dice_similarity": little_gray_cells, "lipinski": lipinski})
-                gen_df = pd.concat([gen_df_old, gen_df_new], axis=0)
-            else:
-                gen_df = pd.DataFrame({"smiles": smiles, "dice_similarity": little_gray_cells, "lipinski": lipinski})
-            gen_df.sort_values(["lipinski", "dice_similarity"], inplace=True, ascending=False)
-            gen_df.drop_duplicates(inplace=True)
-            gen_df.reset_index(drop=True).to_csv(file_name)
+            gen_df = pd.DataFrame({"smiles": smiles, "dice_similarity": little_gray_cells, "lipinski": lipinski})
+        gen_df.sort_values(["lipinski", "dice_similarity"], inplace=True, ascending=False)
+        gen_df.drop_duplicates(inplace=True)
+        gen_df.reset_index(drop=True).to_csv(file_name)
 
         return (generated_mols, smiles, morgan_fps, little_gray_cells, lipinski)
 
     def getReward(self):
         try:
-            (generated_mols, self.smiles, morgan_fps, little_gray_cells, lipinski) = self.genMols(self.jewel, self.hercule, self.experiment, self.file_name, self.dataset, self.verbose)
+            (generated_mols, self.smiles, morgan_fps, little_gray_cells, lipinski) = self.genMols(self.jewel, self.hercule, self.experiment, self.file_name, self.json, self.verbose)
             if self.verbose:
                 print("getReward genMols")
         except:
@@ -219,7 +221,7 @@ def console_script2():
     parser.add_argument("-b", "--generate", dest='generate', default=10, type=int, help="Numbers of molecule generation.  Default is 10.")
     parser.add_argument("-p", "--path", dest="path", default="gen_smiles", type=str, help="Directory where you want to save.  Default is gen_smiles.")
     parser.add_argument("-f", "--file", dest="file_name", default="generated_smiles.csv", type=str, help="File name.  Default is generated_smiles.csv.")
-    parser.add_argument("-d", "--dataset", dest="dataset", action="store_true", help="Output json file for similarity_classification.py instead of csv file.")
+    parser.add_argument("-j", "--json", dest="json", action="store_true", help="Output json file for similarity_classification.py.")
     parser.add_argument("-v", "--verbose", dest="verbose", action="store_true", help="Verbose mode.")
     args = parser.parse_args()
 
@@ -227,8 +229,8 @@ def console_script2():
     file_name = os.path.join(args.path, args.file_name)
     jewel = args.target
     double_clue = args.molecule
-    dataset = args.dataset
-    (generated_mols, smiles, morgan_fps, little_gray_cells, lipinski) = SimilarityState.genMols(jewel, double_clue, args.generate, file_name, dataset, args.verbose)
+    json = args.json
+    (generated_mols, smiles, morgan_fps, little_gray_cells, lipinski) = SimilarityState.genMols(jewel, double_clue, args.generate, file_name, json, args.verbose)
     if args.verbose:
         print("Generated smiles: {}".format(smiles))
 
@@ -277,7 +279,7 @@ def console_script():
     parser.add_argument("-s", "--select", dest='select', default=None, type=int, help="Select list of N smiles from generated_smiles.csv or -f file_name.  Must be an integer.")
     parser.add_argument("-p", "--path", dest="path", default="gen_smiles", type=str, help="Directory where you want to save.  Default is gen_smiles.")
     parser.add_argument("-f", "--file", dest="file_name", default="generated_smiles.csv", type=str, help="File name.  Default is generated_smiles.csv.")
-    parser.add_argument("-d", "--dataset", dest="dataset", action="store_true", help="Output json file for similarity_classification.py instead of csv file.")
+    parser.add_argument("-j", "--json", dest="json", action="store_true", help="Output json file for similarity_classification.py.")
     parser.add_argument("-v", "--verbose", dest="verbose", action="store_true", help="Verbose mode.")
     args = parser.parse_args()
 
@@ -303,12 +305,13 @@ def console_script():
         # vera = pd.read_csv(os.path.join(os.getcwd(), 'smiles.csv'), header=0, usecols=[2]).squeeze().values.tolist()
 
     os.makedirs(args.path, exist_ok=True)
-    file_name = os.path.join(args.path, args.file_name)
-    dataset = args.dataset
+    # file_name = os.path.join(args.path, args.file_name)
+    file_name = os.path.join(args.path, os.path.splitext(args.file_name)[0] + '.csv')
+    json = args.json
     verbose = args.verbose
 
     initialState = SimilarityState(jewel, vera,
-                                   args.loop, args.experiment, file_name, dataset, verbose)
+                                   args.loop, args.experiment, file_name, json, verbose)
     mymcts = mcts(iterationLimit=args.iterationLimit)
 
     double_clue = set()
@@ -320,7 +323,7 @@ def console_script():
     if args.include:
         double_clue.add(jewel)
     print("Material candidates: {}".format(double_clue))
-    (generated_mols, smiles, morgan_fps, little_gray_cells, lipinski) = initialState.genMols(jewel, double_clue, args.generate, file_name, dataset, verbose)
+    (generated_mols, smiles, morgan_fps, little_gray_cells, lipinski) = initialState.genMols(jewel, double_clue, args.generate, file_name, json, verbose)
     if args.verbose:
         print("Generated smiles: {}".format(smiles))
 
