@@ -2,3 +2,4 @@ rdkit-pypi
 global_chem_extensions
 deap
 mcts
+mcts-solver

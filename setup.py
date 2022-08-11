@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='chem_ant',
-    version='0.0.2a1',
+    version='0.0.2',
     url='https://github.com/akuroiwa/chem-ant',
     # # PyPI url
     # download_url='',
@@ -21,24 +21,23 @@ setup(
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Environment :: Console',
-        "Intended Audience :: Developers",
-        "Intended Audience :: Science/Research",
-        'Intended Audience :: Education',
+        'Intended Audience :: Developers',
         'Intended Audience :: Science/Research',
-        "Operating System :: OS Independent",
+        'Intended Audience :: Education',
+        'Operating System :: OS Independent',
         'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
         'Programming Language :: Python :: 3 :: Only',
         'Topic :: Scientific/Engineering',
         'Topic :: Software Development',
         'Topic :: Scientific/Engineering :: Chemistry',
         'Topic :: Scientific/Engineering :: Medical Science Apps.',
-        "Topic :: Software Development :: Libraries :: Python Modules"
+        'Topic :: Software Development :: Libraries :: Python Modules'
     ],
     platforms='any',
     keywords=['evolutionary algorithms', 'genetic programming', 'gp', 'mcts', 'mcts solver', 'cheminformatics', 'chemoinformatics'],
     packages=find_packages(),
     include_package_data=True,
-    install_requires=['rdkit-pypi', 'global_chem_extensions', 'mcts', 'deap'],
+    install_requires=['rdkit-pypi', 'global_chem_extensions', 'mcts', 'deap', 'mcts-solver'],
     extras_require={
         "classification": ["transformers", "chem_classification"]},
     entry_points={
