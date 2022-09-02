@@ -309,6 +309,12 @@ def console_script():
     parser.add_argument("-v", "--verbose", dest="verbose", action="store_true", help="Verbose mode.")
     args = parser.parse_args()
 
+    os.makedirs(args.path, exist_ok=True)
+    # file_name = os.path.join(args.path, args.file_name)
+    file_name = os.path.join(args.path, os.path.splitext(args.file_name)[0] + '.csv')
+    json = args.json
+    verbose = args.verbose
+
     if args.target == None:
         # jewel = "C1CCNC(C1)C(C2=CC(=NC3=C2C=CC=C3C(F)(F)F)C(F)(F)F)O"
         # jewel = "CC1([C@@H]2[C@H]1[C@H](N(C2)C(=O)[C@H](C(C)(C)C)NC(=O)C(F)(F)F)C(=O)N[C@@H](C[C@@H]3CCNC3=O)C#N)C"
@@ -317,11 +323,18 @@ def console_script():
     else:
         jewel = args.target
     if args.select:
-        vera = pd.read_csv('generated_smiles.csv', header=0, usecols=[1], nrows=args.select).squeeze().values.tolist()
+        vera = pd.read_csv(file_name,
+                           header=0, usecols=[1], nrows=args.select).squeeze().values.tolist()
     elif args.molecule:
         vera = args.molecule
     else:
-        vera = pd.read_csv('smiles.csv', header=None, usecols=[2]).squeeze().values.tolist()
+        try:
+            if os.path.isfile(os.path.join(os.getcwd(), 'smiles.csv')):
+                vera = pd.read_csv(os.path.join(os.getcwd(), 'smiles.csv'), header=None, usecols=[2]).squeeze().values.tolist()
+            else:
+                vera = pd.read_csv(os.path.join(os.path.dirname(__file__), 'smiles.csv'), header=None, usecols=[2]).squeeze().values.tolist()
+        except OSError:
+            print("A file smiles.csv not found.")
 
     # if args.molecule == None:
     #     vera = pd.read_csv('smiles.csv', header=None, usecols=[2]).squeeze().values.tolist()
@@ -336,12 +349,8 @@ def console_script():
     experiment = args.experiment
     population = args.population
     generation = args.generation
-    os.makedirs(args.path, exist_ok=True)
-    file_name = os.path.join(args.path, args.file_name)
     dl = args.dl
     regression = args.regression
-    json = args.json
-    verbose = args.verbose
     for i in range(args.loop):
         # initialState.setPrevious(double_clue)
         # action = mcts.search(initialState=initialState)

@@ -288,6 +288,12 @@ def console_script():
     parser.add_argument("-v", "--verbose", dest="verbose", action="store_true", help="Verbose mode.")
     args = parser.parse_args()
 
+    os.makedirs(args.path, exist_ok=True)
+    # file_name = os.path.join(args.path, args.file_name)
+    file_name = os.path.join(args.path, os.path.splitext(args.file_name)[0] + '.csv')
+    json = args.json
+    verbose = args.verbose
+
     if args.target == None:
         # jewel = "C1CCNC(C1)C(C2=CC(=NC3=C2C=CC=C3C(F)(F)F)C(F)(F)F)O"
         # Nirmatrelvir
@@ -300,20 +306,20 @@ def console_script():
         jewel = args.target
     if args.select:
         # vera = pd.read_csv('generated_smiles.csv', header=0, usecols=[1], nrows=args.select).squeeze().values.tolist()
-        vera = pd.read_csv(os.path.join(args.path, args.file_name),
+        vera = pd.read_csv(file_name,
                            header=0, usecols=[1], nrows=args.select).squeeze().values.tolist()
     elif args.molecule:
         vera = args.molecule
     else:
         # vera = pd.read_csv('smiles.csv', header=None, usecols=[2]).squeeze().values.tolist()
-        vera = pd.read_csv(os.path.join(os.getcwd(), 'smiles.csv'), header=None, usecols=[2]).squeeze().values.tolist()
+        try:
+            if os.path.isfile(os.path.join(os.getcwd(), 'smiles.csv')):
+                vera = pd.read_csv(os.path.join(os.getcwd(), 'smiles.csv'), header=None, usecols=[2]).squeeze().values.tolist()
+            else:
+                vera = pd.read_csv(os.path.join(os.path.dirname(__file__), 'smiles.csv'), header=None, usecols=[2]).squeeze().values.tolist()
+        except OSError:
+            print("A file smiles.csv not found.")
         # vera = pd.read_csv(os.path.join(os.getcwd(), 'smiles.csv'), header=0, usecols=[2]).squeeze().values.tolist()
-
-    os.makedirs(args.path, exist_ok=True)
-    # file_name = os.path.join(args.path, args.file_name)
-    file_name = os.path.join(args.path, os.path.splitext(args.file_name)[0] + '.csv')
-    json = args.json
-    verbose = args.verbose
 
     initialState = SimilarityState(jewel, vera,
                                    args.loop, args.experiment, file_name, json, verbose)
@@ -330,7 +336,7 @@ def console_script():
         double_clue.add(jewel)
     print("Material candidates: {}".format(double_clue))
     (generated_mols, smiles, morgan_fps, little_gray_cells, lipinski) = initialState.genMols(jewel, double_clue, args.generate, file_name, json, verbose)
-    if args.verbose:
+    if verbose:
         print("Generated smiles: {}".format(smiles))
 
 if __name__ == "__main__":
