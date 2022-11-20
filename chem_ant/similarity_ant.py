@@ -101,20 +101,19 @@ class SimilarityAntSimulator(object):
 
     def set_dl(self, regression=False):
         self.mcts_instance.dl = True
-        # self.mcts_instance.regression = True
         self.mcts_instance.regression = regression
         if regression:
             try:
                 from chem_classification.similarity_classification import SimilarityRegression
             except ImportError:
                 from similarity_classification import SimilarityRegression
-            self.mcts_instance.classification = SimilarityRegression()
+            self.mcts_instance.model = SimilarityRegression()
         else:
             try:
                 from chem_classification.similarity_classification import SimilarityClassification
             except ImportError:
                 from similarity_classification import SimilarityClassification
-            self.mcts_instance.classification = SimilarityClassification()
+            self.mcts_instance.model = SimilarityClassification()
 
     def selectNode_1(self):
         node = self.mcts_instance.selectNode_num(self.root, 1 / math.sqrt(1))
@@ -199,8 +198,8 @@ class SimilarityAntSimulator(object):
 
 class AntMcts(AntLionMcts):
 
-    def dl_method(self, bestChild):
-        prediction, raw_outputs = self.classification.predict_smiles_pair(bestChild.state.jewel, ' '.join(bestChild.state.hercule))
+    def dl_method(self, state):
+        prediction, raw_outputs = self.model.predict_smiles_pair(state.jewel, ' '.join(state.hercule))
         if self.regression:
             if prediction <= 0.5:
                 dl_prediction = 0
@@ -215,7 +214,7 @@ class AntMcts(AntLionMcts):
                 dl_prediction = -1
             else:
                 dl_prediction = 0
-        reward = bestChild.state.getCurrentPlayer() * -dl_prediction
+        return state.getCurrentPlayer() * -dl_prediction
 
 
 ant = SimilarityAntSimulator()
@@ -268,7 +267,7 @@ def main(jewel, vera, double_clue, loop=1, experiment=3, file_name="generated_sm
     # if dl or regression:
         ant.set_dl()
     elif regression:
-        ant.set_dl(regression)
+        ant.set_dl(regression=True)
     pop = toolbox.population(n=population)
     hof = tools.HallOfFame(100)
     stats = tools.Statistics(lambda ind: ind.fitness.values)
@@ -354,8 +353,8 @@ def console_script():
     for i in range(args.loop):
         # initialState.setPrevious(double_clue)
         # action = mcts.search(initialState=initialState)
-        pop, hof, stats, action = main(jewel, vera,
-                                       double_clue, loop, experiment, file_name, population, generation, dl, regression, json, verbose)
+        pop, hof, stats, action = main(jewel, vera, double_clue, loop, experiment, file_name, population, generation,
+                                       dl, regression, json, verbose)
         double_clue.add(action)
         # loop -= 1
 
