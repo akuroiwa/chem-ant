@@ -151,6 +151,11 @@ class SimilarityAntSimulator(object):
         node = self.mcts_instance.selectNode_num(self.root, 1 / math.sqrt(9))
         self._executeRound(node, 9)
 
+    def selectNodeEphemeralConstant(self):
+        sqrt_num = random.randint(1,10) * (1 - random.random())
+        node = self.mcts_instance.selectNode_num(self.root, 1 / math.sqrt(sqrt_num))
+        self._executeRound(node, sqrt_num)
+
     def _executeRound(self, node, sqrt_num):
         # reward = self.mcts_instance.rollout(node.state)
         reward = self.mcts_instance.mctsSolver(node)
@@ -235,6 +240,7 @@ pset.addTerminal(ant.selectNode_6)
 pset.addTerminal(ant.selectNode_7)
 pset.addTerminal(ant.selectNode_8)
 pset.addTerminal(ant.selectNode_9)
+pset.addTerminal(ant.selectNodeEphemeralConstant)
 
 creator.create("FitnessMax", base.Fitness, weights=(1.0,))
 creator.create("Individual", gp.PrimitiveTree, fitness=creator.FitnessMax)
