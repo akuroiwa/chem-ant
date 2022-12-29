@@ -17,7 +17,7 @@ setup(
     long_description=open("README.md", "r").read(),
     long_description_content_type='text/markdown',
     zip_safe=False,
-    python_requires=">=3.7",
+    python_requires=">=3.7, !=3.10.*",
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Environment :: Console',
@@ -37,7 +37,7 @@ setup(
     keywords=['evolutionary algorithms', 'genetic programming', 'gp', 'mcts', 'mcts solver', 'cheminformatics', 'chemoinformatics'],
     packages=find_packages(),
     include_package_data=True,
-    install_requires=['rdkit-pypi', 'global_chem_extensions', 'mcts', 'deap', 'mcts-solver'],
+    install_requires=['rdkit-pypi', 'global_chem_extensions', 'mcts', 'deap', 'mcts-solver', 'pandas'],
     extras_require={
         "classification": ["transformers", "chem_classification"]},
     entry_points={
