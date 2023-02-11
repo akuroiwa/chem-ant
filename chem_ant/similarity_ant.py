@@ -99,7 +99,7 @@ class SimilarityAntSimulator(object):
         # self.root = AntTreeNode(self.initialState, None)
         self.root = AntLionTreeNode(self.initialState, None)
 
-    def set_dl(self, regression=False):
+    def set_dl(self, regression=False, output_dir='outputs/'):
         self.mcts_instance.dl = True
         self.mcts_instance.regression = regression
         if regression:
@@ -113,7 +113,7 @@ class SimilarityAntSimulator(object):
                 from chem_classification.similarity_classification import SimilarityClassification
             except ImportError:
                 from similarity_classification import SimilarityClassification
-            self.mcts_instance.model = SimilarityClassification()
+            self.mcts_instance.model = SimilarityClassification(output_dir)
 
     def selectNode_1(self):
         node = self.mcts_instance.selectNode_num(self.root, 1 / math.sqrt(1))
@@ -266,14 +266,14 @@ toolbox.register("mate", gp.cxOnePoint)
 toolbox.register("expr_mut", gp.genFull, min_=0, max_=2)
 toolbox.register("mutate", gp.mutUniform, expr=toolbox.expr_mut, pset=pset)
 
-def main(jewel, vera, double_clue, loop=1, experiment=3, file_name="generated_smiles.csv", population=500, generation=15, dl=False, regression=False, json=False, verbose=False):
+def main(jewel, vera, double_clue, loop=1, experiment=3, file_name="generated_smiles.csv", population=500, generation=15, dl=False, regression=False, json=False, verbose=False, output_dir='outputs/'):
     random.seed(69)
     ant.set_loop(jewel, vera, double_clue, loop, experiment, file_name, json, verbose)
     if dl:
     # if dl or regression:
-        ant.set_dl()
+        ant.set_dl(output_dir=output_dir)
     elif regression:
-        ant.set_dl(regression=True)
+        ant.set_dl(regression=True, output_dir=output_dir)
     pop = toolbox.population(n=population)
     hof = tools.HallOfFame(100)
     stats = tools.Statistics(lambda ind: ind.fitness.values)
@@ -309,6 +309,7 @@ def console_script():
     parser.add_argument("-p", "--path", dest="path", default="gen_smiles", type=str, help="Directory where you want to save.  Default is gen_smiles.")
     parser.add_argument("-f", "--file", dest="file_name", default="generated_smiles.csv", type=str, help="File name.  Default is generated_smiles.csv.")
     parser.add_argument("-d", "--deep-learning", dest='dl', action='store_true', help="With deep learning.")
+    parser.add_argument("-o", "--model-outputs", dest='output_dir', default='outputs/', type=str, help="The directory where all deep-learning outputs will be stored.")
     parser.add_argument("-r", "--rgression", dest="regression", action="store_true", help="Use regression model.")
     parser.add_argument("-j", "--json", dest="json", action="store_true", help="Output json file for similarity_classification.py.")
     parser.add_argument("-v", "--verbose", dest="verbose", action="store_true", help="Verbose mode.")
@@ -360,7 +361,7 @@ def console_script():
         # initialState.setPrevious(double_clue)
         # action = mcts.search(initialState=initialState)
         pop, hof, stats, action = main(jewel, vera, double_clue, loop, experiment, file_name, population, generation,
-                                       dl, regression, json, verbose)
+                                       dl, regression, json, verbose, output_dir=args.output_dir)
         double_clue.add(action)
         # loop -= 1
 
