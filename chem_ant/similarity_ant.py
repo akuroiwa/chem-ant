@@ -107,7 +107,7 @@ class SimilarityAntSimulator(object):
                 from chem_classification.similarity_classification import SimilarityRegression
             except ImportError:
                 from similarity_classification import SimilarityRegression
-            self.mcts_instance.model = SimilarityRegression()
+            self.mcts_instance.model = SimilarityRegression(output_dir)
         else:
             try:
                 from chem_classification.similarity_classification import SimilarityClassification
