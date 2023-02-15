@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='chem_ant',
-    version='0.0.6',
+    version='0.0.7',
     url='https://github.com/akuroiwa/chem-ant',
     # # PyPI url
     # download_url='',

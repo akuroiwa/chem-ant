@@ -150,14 +150,21 @@ class SimilarityState():
 
         if json:
             json_file_name = os.path.splitext(file_name)[0] + '.json'
-            poirot = " ".join(hercule)
+            jewel_set = set()
+            jewel_set.update(BRICS.BRICSDecompose(Chem.MolFromSmiles(jewel)))
+            jewel_token = ' '.join(jewel_set)
+            smiles_set = set()
+            for s in smiles:
+                smiles_set.update(BRICS.BRICSDecompose(Chem.MolFromSmiles(s)))
+            poirot = ' '.join(smiles_set)
             max_suspect = max(little_gray_cells)
             if os.path.exists(json_file_name):
                 gen_df_old = pd.read_json(json_file_name)
-                gen_df_new = pd.DataFrame([{"text_a": jewel, "text_b": poirot, "labels": max_suspect}])
+                # gen_df_new = pd.DataFrame([{"text_a": jewel, "text_b": poirot, "labels": max_suspect}])
+                gen_df_new = pd.DataFrame([{"text_a": jewel_token, "text_b": poirot, "labels": max_suspect}])
                 gen_df = pd.concat([gen_df_old, gen_df_new], axis=0)
             else:
-                gen_df = pd.DataFrame([{"text_a": jewel, "text_b": poirot, "labels": max_suspect}])
+                gen_df = pd.DataFrame([{"text_a": jewel_token, "text_b": poirot, "labels": max_suspect}])
             gen_df.sort_values("labels", inplace=True, ascending=False)
             gen_df.drop_duplicates(inplace=True)
             gen_df.reset_index(drop=True).to_json(json_file_name)
