@@ -83,6 +83,11 @@ class SimilarityState():
 
     @classmethod
     def genMols(cls, jewel, hercule, loop=3, file_name="generated_smiles.csv", json=False, verbose=False):
+        """Please refer to the links below for validation of smiles.
+        `Improve error handling when trying to import an invalid .mol file. #642 <https://github.com/rdkit/rdkit/issues/642>`__
+        `Validating SMILES with RDKit, PySMILES, MolVS, and PartialSMILES
+        <https://sharifsuliman.medium.com/validating-smiles-with-rdkit-pysmiles-molvs-and-partialsmiles-5b65e800235f>`__
+        """
     # @staticmethod
     # def genMols(jewel, hercule, loop=3, file_name="generated_smiles.csv"):
         jewel_mol = Chem.MolFromSmiles(jewel)
@@ -96,7 +101,23 @@ class SimilarityState():
 
         for smiles in hercule:
             try:
-                allfrags.update(BRICS.BRICSDecompose(Chem.MolFromSmiles(smiles), returnMols=True))
+                # Validate smiles.  This code was suggested by chatGPT.
+                # mol = Chem.MolFromSmiles(smiles)
+                # if mol is not None:
+                #     frags = BRICS.BRICSDecompose(mol, returnMols=True)
+                #     allfrags.update(frags)
+                # else:
+                #     print('Invalid SMILES')
+
+                # Validate smiles.  This code was suggested by chatGPT.
+                mol = Chem.MolFromSmiles(smiles)
+                try:
+                    frags = BRICS.BRICSDecompose(mol, returnMols=True)
+                    allfrags.update(frags)
+                except:
+                    print('Error processing molecule')
+
+                # allfrags.update(BRICS.BRICSDecompose(Chem.MolFromSmiles(smiles), returnMols=True))
                 if verbose:
                     print("allfrags update")
             except TypeError:
