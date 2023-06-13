@@ -36,6 +36,7 @@ import pandas as pd
 # from collections import deque
 # import sys
 # from concurrent.futures.process import ProcessPoolExecutor
+from multiprocessing import Lock
 
 
 # def progn(*args):
@@ -73,6 +74,7 @@ class SimilarityAntSimulator(object):
         self.pruning = 0
         # self.initialState = SimilarityState(jewel, vera, loop)
         # self.mcts_instance = AntMcts(iterationLimit=5)
+        self.lock = Lock()
 
     def _reset(self):
         self.previous_eaten = 0
@@ -256,8 +258,9 @@ toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 
 def evalArtificialAnt(individual):
     # Transform the tree expression to functionnal Python code
-    routine = gp.compile(individual, pset)
-    ant.run(routine)
+    with ant.lock:
+        routine = gp.compile(individual, pset)
+        ant.run(routine)
     return ant.eaten,
 
 toolbox.register("evaluate", evalArtificialAnt)
