@@ -5,13 +5,13 @@ from setuptools import setup, find_packages
 
 setup(
     name='chem_ant',
-    version='0.0.8',
+    version='0.0.9',
     url='https://github.com/akuroiwa/chem-ant',
     # # PyPI url
     # download_url='',
     license='GNU/GPLv3+',
-    author='Akihiro Kuroiwa',
-    author_email='akuroiwa@env-reform.com',
+    author='Akihiro Kuroiwa, ChatGPT of OpenAI',
+    author_email='akuroiwa@env-reform.com, ',
     description='Select materials to output molecules similar to the target molecule with MCTS Solver and Genetic Programming.',
     # long_description="\n%s" % open('README.md').read(),
     long_description=open("README.md", "r").read(),

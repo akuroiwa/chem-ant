@@ -74,6 +74,7 @@ class SimilarityAntSimulator(object):
         self.pruning = 0
         # self.initialState = SimilarityState(jewel, vera, loop)
         # self.mcts_instance = AntMcts(iterationLimit=5)
+        self.operations_count = 0
         self.lock = Lock()
 
     def _reset(self):
@@ -85,6 +86,7 @@ class SimilarityAntSimulator(object):
         self.shortcut = 0
         self.result = 0
         self.pruning = 0
+        self.operations_count = 0
 
     @property
     def get_prediction(self):
@@ -95,7 +97,7 @@ class SimilarityAntSimulator(object):
     def set_loop(self, jewel, vera, double_clue, loop, experiment, file_name, json, verbose):
         self.initialState = SimilarityState(jewel, vera,
                                    loop, experiment, file_name, json, verbose)
-        self.mcts_instance = AntMcts(iterationLimit=5)
+        self.mcts_instance = AntMcts(iterationLimit=1)
         self.initialState.setPrevious(double_clue)
         # self.mcts_instance = AntMcts(iterationLimit=5)
         # self.root = AntTreeNode(self.initialState, None)
@@ -169,10 +171,11 @@ class SimilarityAntSimulator(object):
             2 * math.log(self.root.numVisits) / node.numVisits)
         self.improvement = 2 if self.eaten > self.previous_eaten else 1 if self.eaten == self.previous_eaten else 0
         self.previous_eaten = self.eaten
-        self.shortcut = 2 if length > self.previous_length else 1 if length == self.previous_length else 0
+        self.shortcut = 2 if length < self.previous_length else 1 if length == self.previous_length else 0
         self.previous_length = length
         self.result = 2 if node.state.getReward() == 1 else 1 if node.state.getReward() == -1 else 0
         self.pruning = 2 if self.eaten == float("inf") else 1 if self.eaten == float("-inf") else 0
+        self.operations_count += 1
 
     def sense_improvement(self):
         return self.improvement
@@ -200,8 +203,16 @@ class SimilarityAntSimulator(object):
 
     def run(self,routine):
         self._reset()
-        routine()
+        # routine()
 
+        if self.mcts_instance.limitType == 'time':
+            timeLimit = time.time() + self.mcts_instance.timeLimit / 1000
+            while time.time() < timeLimit:
+                routine()
+        else:
+            # self.operations_count = 0
+            while self.operations_count < self.mcts_instance.searchLimit:
+                routine()
 
 class AntMcts(AntLionMcts):
 
@@ -233,16 +244,22 @@ pset.addPrimitive(ant.if_improvement, 3)
 pset.addPrimitive(ant.if_shortcut, 3)
 pset.addPrimitive(ant.if_result, 3)
 pset.addPrimitive(ant.if_pruning, 3)
-pset.addTerminal(ant.selectNode_1)
-pset.addTerminal(ant.selectNode)
-pset.addTerminal(ant.selectNode_3)
-pset.addTerminal(ant.selectNode_4)
-pset.addTerminal(ant.selectNode_5)
-pset.addTerminal(ant.selectNode_6)
-pset.addTerminal(ant.selectNode_7)
-pset.addTerminal(ant.selectNode_8)
-pset.addTerminal(ant.selectNode_9)
-pset.addTerminal(ant.selectNodeEphemeralConstant)
+
+terminal_methods = [
+    ant.selectNode_1,
+    ant.selectNode,
+    ant.selectNode_3,
+    ant.selectNode_4,
+    ant.selectNode_5,
+    ant.selectNode_6,
+    ant.selectNode_7,
+    ant.selectNode_8,
+    ant.selectNode_9,
+    ant.selectNodeEphemeralConstant
+]
+
+for method in terminal_methods:
+    pset.addTerminal(method)
 
 creator.create("FitnessMax", base.Fitness, weights=(1.0,))
 creator.create("Individual", gp.PrimitiveTree, fitness=creator.FitnessMax)

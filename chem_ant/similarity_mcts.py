@@ -67,7 +67,9 @@ class SimilarityState():
     def takeAction(self, action):
         newState = deepcopy(self)
         newState.hercule.append(action)
-        newState.currentPlayer = self.currentPlayer * -1
+        # newState.currentPlayer = self.currentPlayer * -1
+        newState.currentPlayer = self.currentPlayer
+        self.currentPlayer *= -1
         if self.verbose:
             print("takeAction")
         return newState
@@ -116,6 +118,7 @@ class SimilarityState():
                     allfrags.update(frags)
                 except:
                     print('Error processing molecule')
+                    # raise ValueError('Error processing molecule')
 
                 # allfrags.update(BRICS.BRICSDecompose(Chem.MolFromSmiles(smiles), returnMols=True))
                 if verbose:
@@ -124,7 +127,7 @@ class SimilarityState():
                 if verbose:
                     print("TypeError")
                     print(allfrags)
-                continue
+                # continue
 
         if not allfrags:
             raise ValueError("Any fragments is not generated.")
@@ -148,7 +151,9 @@ class SimilarityState():
                 if verbose:
                     print("SanitizeMol")
             except StopIteration:
-                break
+                # break
+                if verbose:
+                    print("StopIteration")
 
             if Chem.SanitizeMol(mol, catchErrors=True) == 0:
                 generated_mols.append(mol)
@@ -168,6 +173,7 @@ class SimilarityState():
                 del mol
                 # break
                 raise ValueError("SanitizeMol error")
+                # pass
 
         if json:
             json_file_name = os.path.splitext(file_name)[0] + '.json'
@@ -193,7 +199,15 @@ class SimilarityState():
         if os.path.exists(file_name):
             gen_df_old = pd.read_csv(file_name, index_col=0)
             gen_df_new = pd.DataFrame({"smiles": smiles, "dice_similarity": little_gray_cells, "lipinski": lipinski})
-            gen_df = pd.concat([gen_df_old, gen_df_new], axis=0)
+            # gen_df = pd.concat([gen_df_old, gen_df_new], axis=0)
+
+            # FutureWarning: The behavior of array concatenation with empty entries is deprecated. In a future version, this will no longer exclude empty items when determining the result dtype. To retain the old behavior, exclude the empty entries before the concat operation.
+            if not gen_df_old.empty and not gen_df_new.empty:
+                gen_df = pd.concat([gen_df_old, gen_df_new], axis=0)
+            elif not gen_df_old.empty:
+                gen_df = gen_df_old
+            else:
+                gen_df = gen_df_new
         else:
             gen_df = pd.DataFrame({"smiles": smiles, "dice_similarity": little_gray_cells, "lipinski": lipinski})
         gen_df.sort_values(["lipinski", "dice_similarity"], inplace=True, ascending=False)
@@ -292,7 +306,7 @@ def bool_lipinski(molecule):
     h_bond_donor = Descriptors.NumHDonors(molecule)
     h_bond_acceptors = Descriptors.NumHAcceptors(molecule)
     rotatable_bonds = Descriptors.NumRotatableBonds(molecule)
-    if molecular_weight <= 500 and logp <= 5 and h_bond_donor <= 5 and h_bond_acceptors <= 10and rotatable_bonds <= 5:
+    if molecular_weight <= 500 and logp <= 5 and h_bond_donor <= 5 and h_bond_acceptors <= 10 and rotatable_bonds <= 5:
         lipinski = True
     else:
         lipinski = False
