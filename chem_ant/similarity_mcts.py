@@ -150,30 +150,27 @@ class SimilarityState():
                 mol.UpdatePropertyCache(strict=True)
                 if verbose:
                     print("SanitizeMol")
+
+                if Chem.SanitizeMol(mol, catchErrors=True) == 0:
+                    generated_mols.append(mol)
+                    smiles.append(Chem.MolToSmiles(mol))
+                    if verbose:
+                        print("generated_mols append")
+                    morgan_fp = AllChem.GetMorganFingerprintAsBitVect(mol, 2, 2048)
+                    morgan_fps.append(morgan_fp)
+                    little_gray_cells.append(DataStructs.DiceSimilarity(jewel_fp, morgan_fp))
+                    lipinski.append(bool_lipinski(mol))
+                else:
+                    del mol
+                    raise ValueError("SanitizeMol error")
             except StopIteration:
-                # break
                 if verbose:
                     print("StopIteration")
-
-            if Chem.SanitizeMol(mol, catchErrors=True) == 0:
-                generated_mols.append(mol)
-                smiles.append(Chem.MolToSmiles(mol))
+                break
+            except ValueError as e:
                 if verbose:
-                    print("generated_mols append")
-                morgan_fp = AllChem.GetMorganFingerprintAsBitVect(mol, 2, 2048)
-                # morgan_fp = Pairs.GetAtomPairFingerprint(mol)
-                # morgan_fp = FingerprintMols.FingerprintMol(mol)
-                morgan_fps.append(morgan_fp)
-                little_gray_cells.append(DataStructs.DiceSimilarity(jewel_fp, morgan_fp))
-                # little_gray_cells.append(DataStructs.FingerprintSimilarity(jewel_fp, morgan_fp))
-                # little_gray_cells.append(DataStructs.TanimotoSimilarity(jewel_fp, morgan_fp))
-                lipinski.append(bool_lipinski(mol))
-                # lipinski.append(bool(bool_lipinski(mol)))
-            else:
-                del mol
-                # break
-                raise ValueError("SanitizeMol error")
-                # pass
+                    print(f"Error: {e}")
+                continue
 
         if json:
             json_file_name = os.path.splitext(file_name)[0] + '.json'
