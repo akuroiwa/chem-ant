@@ -1,5 +1,6 @@
-rdkit-pypi
+rdkit
 global_chem_extensions
 deap
 mcts
 mcts-solver
+pandas
