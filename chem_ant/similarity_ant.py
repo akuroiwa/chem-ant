@@ -33,6 +33,7 @@ import os
 
 import argparse
 import pandas as pd
+from global_chem import GlobalChem
 # from collections import deque
 # import sys
 # from concurrent.futures.process import ProcessPoolExecutor
@@ -318,6 +319,8 @@ def console_script():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("-t", "--target", dest='target', default=None, type=str, help="Target smile.")
     parser.add_argument("-m", "--molecule", dest='molecule', default=None, type=str, help="List of smiles from which the fragments are made.", nargs='+')
+    parser.add_argument('-c', '--GlobalChem', type=str, default=None,
+                        help='Include SMILES from global-chem database. Options: global_chem, emerging_perfluoroalkyls, montmorillonite_adsorption, common_monomer_repeating_units, electrophilic_warheads_for_kinases, common_organic_solvents, open_smiles, lanthipeptides')
     # parser.add_argument("-p", "--previous", dest='previous', default=None, type=str, help="List of previously selected smiles.", nargs='+')
     parser.add_argument("-l", "--loop", dest='loop', default=1, type=int, help="For loop.  Default is 1.")
     parser.add_argument("-n", "--population", dest='population', default=500, type=int, help="Population size.  Default is 500.")
@@ -361,6 +364,9 @@ def console_script():
                 vera = pd.read_csv(os.path.join(os.path.dirname(__file__), 'smiles.csv'), header=None, usecols=[2]).squeeze().values.tolist()
         except OSError:
             print("A file smiles.csv not found.")
+    if args.GlobalChem:
+        vera.extend(SimilarityState.get_smiles_from_global_chem(args.GlobalChem))
+        print("Vera extended: {}".format(args.GlobalChem))
 
     # if args.molecule == None:
     #     vera = pd.read_csv('smiles.csv', header=None, usecols=[2]).squeeze().values.tolist()

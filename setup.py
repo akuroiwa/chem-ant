@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='chem_ant',
-    version='0.0.9',
+    version='0.1.0',
     url='https://github.com/akuroiwa/chem-ant',
     # # PyPI url
     # download_url='',
@@ -37,7 +37,7 @@ setup(
     keywords=['evolutionary algorithms', 'genetic programming', 'gp', 'mcts', 'mcts solver', 'cheminformatics', 'chemoinformatics'],
     packages=find_packages(),
     include_package_data=True,
-    install_requires=['rdkit', 'global_chem_extensions', 'mcts', 'deap', 'mcts-solver', 'pandas'],
+    install_requires=['rdkit', 'global-chem', 'global-chem-extensions', 'mcts', 'deap', 'mcts-solver', 'pandas'],
     extras_require={
         "classification": ["transformers", "chem_classification"]},
     entry_points={

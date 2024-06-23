@@ -13,6 +13,7 @@ except ImportError:
 
 import pandas as pd
 import os
+from global_chem import GlobalChem
 from global_chem_extensions.cheminformatics.cheminformatics import ChemInformatics
 
 class SimilarityState():
@@ -141,6 +142,12 @@ class SimilarityState():
         morgan_fps = []
         little_gray_cells = []
         lipinski = []
+        ghose = []
+        veber = []
+        rule_of_3 = []
+        reos = []
+        drug_like = []
+        pass_all_filters = []
 
         for i in range(loop):
             try:
@@ -160,6 +167,12 @@ class SimilarityState():
                     morgan_fps.append(morgan_fp)
                     little_gray_cells.append(DataStructs.DiceSimilarity(jewel_fp, morgan_fp))
                     lipinski.append(bool_lipinski(mol))
+                    ghose.append(bool_ghose(mol))
+                    veber.append(bool_veber(mol))
+                    rule_of_3.append(bool_rule_of_3(mol))
+                    reos.append(bool_reos(mol))
+                    drug_like.append(bool_drug_like(mol))
+                    pass_all_filters.append(bool_pass_all_filters(mol))
                 else:
                     del mol
                     raise ValueError("SanitizeMol error")
@@ -195,7 +208,15 @@ class SimilarityState():
 
         if os.path.exists(file_name):
             gen_df_old = pd.read_csv(file_name, index_col=0)
-            gen_df_new = pd.DataFrame({"smiles": smiles, "dice_similarity": little_gray_cells, "lipinski": lipinski})
+            gen_df_new = pd.DataFrame({"smiles": smiles, "dice_similarity": little_gray_cells,
+                                       "lipinski": lipinski,
+                                       "ghose": ghose,
+                                       "veber": veber,
+                                       "rule_of_3": rule_of_3,
+                                       "reos": reos,
+                                       "drug_like": drug_like,
+                                       "pass_all_filters": pass_all_filters
+                                       })
             # gen_df = pd.concat([gen_df_old, gen_df_new], axis=0)
 
             # FutureWarning: The behavior of array concatenation with empty entries is deprecated. In a future version, this will no longer exclude empty items when determining the result dtype. To retain the old behavior, exclude the empty entries before the concat operation.
@@ -206,12 +227,42 @@ class SimilarityState():
             else:
                 gen_df = gen_df_new
         else:
-            gen_df = pd.DataFrame({"smiles": smiles, "dice_similarity": little_gray_cells, "lipinski": lipinski})
+            gen_df = pd.DataFrame({"smiles": smiles, "dice_similarity": little_gray_cells,
+                                   "lipinski": lipinski,
+                                   "ghose": ghose,
+                                   "veber": veber,
+                                   "rule_of_3": rule_of_3,
+                                   "reos": reos,
+                                   "drug_like": drug_like,
+                                   "pass_all_filters": pass_all_filters
+                                   })
         gen_df.sort_values(["lipinski", "dice_similarity"], inplace=True, ascending=False)
         gen_df.drop_duplicates(inplace=True)
+        gen_df.astype({
+            "lipinski": "bool",
+            "ghose": "bool",
+            "veber": "bool",
+            "rule_of_3": "bool",
+            "reos": "bool",
+            "drug_like": "bool",
+            "pass_all_filters": "bool"
+        })
         gen_df.reset_index(drop=True).to_csv(file_name)
 
         return (generated_mols, smiles, morgan_fps, little_gray_cells, lipinski)
+
+    @classmethod
+    def get_smiles_from_global_chem(cls, database_names):
+        gc = GlobalChem()
+        gc.build_global_chem_network()
+        smiles = []
+        for database_name in database_names:
+            smarts = list(gc.get_node_smarts(database_name).values())
+            for i in smarts:
+                mol = Chem.MolFromSmarts(i)
+                smi = Chem.MolToSmiles(mol)
+                smiles.append(smi)
+        return smiles
 
     def getReward(self):
         try:
@@ -279,6 +330,13 @@ def console_script2():
         print("Generated smiles: {}".format(smiles))
 
 def filter_smiles(smiles_list):
+    """
+    This is based on the paper of
+    `Sharif, Suliman. Understanding drug-likeness filters with RDKit and exploring the WITHDRAWN database. (2020).
+    <https://sharifsuliman1.medium.com/understanding-drug-likeness-filters-with-rdkit-and-exploring-the-withdrawn-database-ebd6b8b2921e>`__
+    and the code of `global-chem <https://github.com/Sulstice/global-chem>`__.
+    """
+
     filtered_smiles = ChemInformatics.filter_smiles_by_criteria(
         smiles_list,
         lipinski_rule_of_5=True,
@@ -290,30 +348,50 @@ def filter_smiles(smiles_list):
         pass_all_filters=False
         )
 
-def bool_lipinski(molecule):
-    """
-    This is based on the paper of
-    `Sharif, Suliman. Understanding drug-likeness filters with RDKit and exploring the WITHDRAWN database. (2020).
-    <https://sharifsuliman1.medium.com/understanding-drug-likeness-filters-with-rdkit-and-exploring-the-withdrawn-database-ebd6b8b2921e>`__
-    and the code of `global-chem <https://github.com/Sulstice/global-chem>`__.
-    """
+def bool_lipinski(mol) -> bool:
+    smi = Chem.MolToSmiles(mol)
+    filter_results = ChemInformatics.filter_smiles_by_criteria([smi], lipinski_rule_of_5=True)
+    return True if filter_results else False
 
-    molecular_weight = Descriptors.ExactMolWt(molecule)
-    logp = Descriptors.MolLogP(molecule)
-    h_bond_donor = Descriptors.NumHDonors(molecule)
-    h_bond_acceptors = Descriptors.NumHAcceptors(molecule)
-    rotatable_bonds = Descriptors.NumRotatableBonds(molecule)
-    if molecular_weight <= 500 and logp <= 5 and h_bond_donor <= 5 and h_bond_acceptors <= 10 and rotatable_bonds <= 5:
-        lipinski = True
-    else:
-        lipinski = False
-    return lipinski
+def bool_ghose(mol) -> bool:
+    """Ghose filter for drug-likeness"""
+    smi = Chem.MolToSmiles(mol)
+    filter_results = ChemInformatics.filter_smiles_by_criteria([smi], ghose=True)
+    return True if filter_results else False
+
+def bool_veber(mol) -> bool:
+    """Veber filter for drug-likeness"""
+    smi = Chem.MolToSmiles(mol)
+    filter_results = ChemInformatics.filter_smiles_by_criteria([smi], veber=True)
+    return True if filter_results else False
+
+def bool_rule_of_3(mol) -> bool:
+    smi = Chem.MolToSmiles(mol)
+    filter_results = ChemInformatics.filter_smiles_by_criteria([smi], rule_of_3=True)
+    return True if filter_results else False
+
+def bool_reos(mol) -> bool:
+    smi = Chem.MolToSmiles(mol)
+    filter_results = ChemInformatics.filter_smiles_by_criteria([smi], reos=True)
+    return True if filter_results else False
+
+def bool_drug_like(mol) -> bool:
+    smi = Chem.MolToSmiles(mol)
+    filter_results = ChemInformatics.filter_smiles_by_criteria([smi], drug_like=True)
+    return True if filter_results else False
+
+def bool_pass_all_filters(mol) -> bool:
+    smi = Chem.MolToSmiles(mol)
+    filter_results = ChemInformatics.filter_smiles_by_criteria([smi], pass_all_filters=True)
+    return True if filter_results else False
 
 
 def console_script():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("-t", "--target", dest='target', default=None, type=str, help="Target smile.")
     parser.add_argument("-m", "--molecule", dest='molecule', default=None, type=str, help="List of smiles from which the fragments are made.", nargs='+')
+    parser.add_argument('-c', '--GlobalChem', type=str, default=None,
+                        help='Include SMILES from global-chem database. Options: global_chem, emerging_perfluoroalkyls, montmorillonite_adsorption, common_monomer_repeating_units, electrophilic_warheads_for_kinases, common_organic_solvents, open_smiles, lanthipeptides', nargs='+')
     # parser.add_argument("-p", "--previous", dest='previous', default=None, type=str, help="List of previously selected smiles.", nargs='+')
     parser.add_argument("-l", "--loop", dest='loop', default=1, type=int, help="For loop.  Default is 2.")
     parser.add_argument("-i", "--include", dest='include', action='store_true', help="Include target smiles in list of smiles.")
@@ -359,6 +437,9 @@ def console_script():
         except OSError:
             print("A file smiles.csv not found.")
         # vera = pd.read_csv(os.path.join(os.getcwd(), 'smiles.csv'), header=0, usecols=[2]).squeeze().values.tolist()
+    if args.GlobalChem:
+        vera.extend(SimilarityState.get_smiles_from_global_chem(args.GlobalChem))
+        print("Select list extended: {}".format(args.GlobalChem))
 
     initialState = SimilarityState(jewel, vera,
                                    args.loop, args.experiment, file_name, json, verbose)
