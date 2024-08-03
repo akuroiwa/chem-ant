@@ -1,8 +1,9 @@
 from rdkit import Chem, DataStructs
 # from rdkit.Chem.Fingerprints import FingerprintMols
-from rdkit.Chem import Descriptors
+# from rdkit.Chem import Descriptors
 from rdkit.Chem import AllChem, BRICS
 # from rdkit.Chem.AtomPairs import Pairs
+from rdkit.Chem import rdFingerprintGenerator
 import argparse
 from copy import deepcopy
 # from mcts import mcts
@@ -17,6 +18,8 @@ from global_chem import GlobalChem
 from global_chem_extensions.cheminformatics.cheminformatics import ChemInformatics
 
 class SimilarityState():
+
+    morgan_gen = rdFingerprintGenerator.GetMorganGenerator(radius=2, fpSize=2048)
 
     def __init__(self, jewel, vera,
                  loop=1, experiment=3, file_name="generated_smiles.csv", json=False, verbose=False):
@@ -96,7 +99,10 @@ class SimilarityState():
         jewel_mol = Chem.MolFromSmiles(jewel)
         jewel_mol.UpdatePropertyCache(strict=True)
         Chem.SanitizeMol(jewel_mol)
-        jewel_fp = AllChem.GetMorganFingerprintAsBitVect(jewel_mol, 2, 2048)
+        # jewel_fp = AllChem.GetMorganFingerprintAsBitVect(jewel_mol, 2, 2048)
+        jewel_fp = cls.morgan_gen.GetFingerprint(jewel_mol)
+        # jewel_fp = cls.morgan_gen.GetFingerprintAsNumPy(jewel_mol)
+
         # jewel_fp = Pairs.GetAtomPairFingerprint(jewel_mol)
         # jewel_fp = FingerprintMols.FingerprintMol(jewel_mol)
 
@@ -163,7 +169,9 @@ class SimilarityState():
                     smiles.append(Chem.MolToSmiles(mol))
                     if verbose:
                         print("generated_mols append")
-                    morgan_fp = AllChem.GetMorganFingerprintAsBitVect(mol, 2, 2048)
+                    # morgan_fp = AllChem.GetMorganFingerprintAsBitVect(mol, 2, 2048)
+                    morgan_fp = cls.morgan_gen.GetFingerprint(mol)
+                    # morgan_fp = cls.morgan_gen.GetFingerprintAsNumPy(mol)
                     morgan_fps.append(morgan_fp)
                     little_gray_cells.append(DataStructs.DiceSimilarity(jewel_fp, morgan_fp))
                     lipinski.append(bool_lipinski(mol))

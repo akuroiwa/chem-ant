@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='chem_ant',
-    version='0.1.0',
+    version='0.1.1',
     url='https://github.com/akuroiwa/chem-ant',
     # # PyPI url
     # download_url='',
@@ -37,14 +37,23 @@ setup(
     keywords=['evolutionary algorithms', 'genetic programming', 'gp', 'mcts', 'mcts solver', 'cheminformatics', 'chemoinformatics'],
     packages=find_packages(),
     include_package_data=True,
-    install_requires=['rdkit', 'global-chem', 'global-chem-extensions', 'mcts', 'deap', 'mcts-solver', 'pandas'],
+    install_requires=['rdkit',
+                      # 'global-chem',
+                      # 'global-chem-extensions',
+                      "global-chem @ git+https://github.com/Global-Chem/global-chem.git#subdirectory=global_chem",
+                      "global-chem-extensions @ git+https://github.com/Global-Chem/global-chem.git#subdirectory=global_chem_extensions",
+                      'mcts',
+                      'deap',
+                      'mcts-solver',
+                      'pandas'],
     extras_require={
         "classification": ["transformers", "chem_classification"]},
     entry_points={
         'console_scripts': [
             'similarity-ant = chem_ant.similarity_ant:console_script',
             'similarity-mcts = chem_ant.similarity_mcts:console_script',
-            'similarity-genMols = chem_ant.similarity_mcts:console_script2'
+            'similarity-genMols = chem_ant.similarity_mcts:console_script2',
+            'create-vina-config = chem_ant.create_vina_config:main'
             ]},
     data_files=[
         ('', glob.glob('chem_ant/*.csv'))
