@@ -45,7 +45,9 @@ setup(
                       'mcts',
                       'deap',
                       'mcts-solver',
-                      'pandas'],
+                      'pandas',
+                      'biopython',
+                      'openbabel-wheel'],
     extras_require={
         "classification": ["transformers", "chem_classification"]},
     entry_points={
@@ -53,7 +55,10 @@ setup(
             'similarity-ant = chem_ant.similarity_ant:console_script',
             'similarity-mcts = chem_ant.similarity_mcts:console_script',
             'similarity-genMols = chem_ant.similarity_mcts:console_script2',
-            'create-vina-config = chem_ant.create_vina_config:main'
+            'create-vina-config = chem_ant.create_vina_config:main',
+            'prepare-experiment = chem_ant.prepare_experiment:main',
+            'select-ligands = chem_ant.select_ligands:main',
+            'run-experiment = chem_ant.run_experiment:main'
             ]},
     data_files=[
         ('', glob.glob('chem_ant/*.csv'))
