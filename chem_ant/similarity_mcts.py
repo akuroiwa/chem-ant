@@ -14,8 +14,18 @@ except ImportError:
 
 import pandas as pd
 import os
-from global_chem import GlobalChem
-from global_chem_extensions.cheminformatics.cheminformatics import ChemInformatics
+# from global_chem import GlobalChem
+# from global_chem_extensions.cheminformatics.cheminformatics import ChemInformatics
+import sys
+try:
+    from global_chem import GlobalChem
+    from global_chem_extensions.cheminformatics.cheminformatics import ChemInformatics
+except ImportError:
+    print("Error: Required dependencies not found.")
+    print("Please install the required packages using the following commands:")
+    print("pip install git+https://github.com/Global-Chem/global-chem.git#subdirectory=global_chem")
+    print("pip install git+https://github.com/Global-Chem/global-chem.git#subdirectory=global_chem_extensions")
+    sys.exit(1)
 
 class SimilarityState():
 

@@ -3,7 +3,7 @@ This is based on the code of
 `deap/examples/gp/ant.py <https://github.com/DEAP/deap/blob/master/examples/gp/ant.py>`__.
 """
 
-import copy
+# import copy
 import random
 
 import numpy
@@ -16,7 +16,7 @@ from deap import creator
 from deap import tools
 from deap import gp
 
-from copy import deepcopy
+# from copy import deepcopy
 # from mcts import mcts, treeNode
 try:
     from mcts_solver.mcts_solver import AntLionTreeNode, AntLionMcts
@@ -33,7 +33,7 @@ import os
 
 import argparse
 import pandas as pd
-from global_chem import GlobalChem
+# from global_chem import GlobalChem
 # from collections import deque
 # import sys
 # from concurrent.futures.process import ProcessPoolExecutor
