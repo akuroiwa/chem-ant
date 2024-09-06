@@ -10,7 +10,7 @@ setup(
     # # PyPI url
     # download_url='',
     license='GNU/GPLv3+',
-    author='Akihiro Kuroiwa, ChatGPT of OpenAI',
+    author='Akihiro Kuroiwa, ChatGPT of OpenAI, Perplexity AI',
     author_email='akuroiwa@env-reform.com, ',
     description='Select materials to output molecules similar to the target molecule with MCTS Solver and Genetic Programming.',
     # long_description="\n%s" % open('README.md').read(),
