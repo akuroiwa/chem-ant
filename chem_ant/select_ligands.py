@@ -30,8 +30,16 @@ def select_top_ligands(csv_file, output_dir, top_n):
     df = pd.read_csv(csv_file)
     top_ligands = df.head(top_n)
 
+    # Check if 'Fragment' or 'smiles' column exists
+    if 'Fragment' in df.columns:
+        smiles_column = 'Fragment'
+    elif 'smiles' in df.columns:
+        smiles_column = 'smiles'
+    else:
+        raise ValueError("CSV file must contain either 'Fragment' or 'smiles' column")
+
     for i, row in top_ligands.iterrows():
-        ligand_smiles = row['Fragment']
+        ligand_smiles = row[smiles_column]
         ligand_file = os.path.join(output_dir, f"ligand_{i + 1}.pdbqt")
         smiles_to_pdbqt(ligand_smiles, ligand_file)
 
